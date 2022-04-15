@@ -4,10 +4,10 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>MQTT Linux</title>
+		<title>MQTT Debian 11</title>
 	</head>
 	<body>
-		<h1>MQTT</h1>
+		<h1>MQTT on Debian 11</h1>
 		<p>
 			MQTT is an OASIS standard messaging protocol for the Internet of Things
 			(IoT). It is designed as an extremely lightweight publish/subscribe
@@ -16,6 +16,65 @@
 			a wide variety of industries, such as automotive, manufacturing,
 			telecommunications, oil and gas, etc.
 		</p>
+		<h2>Installation :</h2>
+		<ul>
+			<li>Login as super user (root)</li>
+			<li>Update system: apt update && apt -y upgrade</li>
+			<li>install packages: apt -y install openssl mosquitto</li>
+		</ul>
+
+		<p>
+			Create list of users file : <br />
+			touch /etc/mosquitto/userlist
+		</p>
+		<p>
+			Append new user: <br />
+			- mosquitto_passwd -b PATH_TO_FILE USERNAME PASSWORD <br />
+			- Ex: mosquitto_passwd -b /etc/mosquitto/userlist user1 12345678
+		</p>
+		<p>
+			Delete user :<br />
+			- mosquitto_passwd -D PATH_TO_FILE USERNAME <br />
+			- Ex: mosquitto_passwd -D /etc/mosquitto/userlist user1
+		</p>
+
+		<p>Create SSL MQTT: <br />
+        <p>Doing this on /etc/mosquitto/ca_certificates/ directory</p>
+        <ul>
+            <li>openssl genrsa -des3 -out ca.key 2048</li>
+            <li>openssl req -new -x509 -days 3600 -key ca.key -out ca.crt # <b>Common Name : CA-localhost</b></li>
+            <li>openssl genrsa -out server.key 2048</li>
+            <li>openssl req -new -out server.csr -key server.key # <b>Common Name : CSR-localhost</b></li>
+            <li>openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 3600</li>
+            <li>Change all permission to 755 : chmod 755 -R /etc/mosquitto/ca_certificates/*</li>
+            <li>Verify : openssl -CAfile ca.crt server.crt, must return OK</li>
+        </ul>
+        <p>
+            Add custom setting to /etc/mosquitto/conf.d/custom.conf <br>
+            # listener 9000 localhost # MQTT on port 9000 only on interval environment
+            # listener 9000 # For non SSL
+            listener 9001 # Using for SSL MQTT
+
+            allow_anonymous false # set to true if don't want using username password verification
+            password_file /etc/mosquitto/conf.d/userlist # comment this if don't want using username password verification
+
+            cafile /etc/mosquitto/ca_certificates/ca.crt # Copy this file to client request
+            keyfile /etc/mosquitto/ca_certificates/server.key
+            certfile /etc/mosquitto/ca_certificates/server.crt
+            tls_version tlsv1.2 # Version tlsv1.1 | tlsv1.2 | tlsv1.3
+            # require_certificate true # Uncomment this if you dont want to use --insecure
+        </p>
+        <b>Common Name must be unique for every generated</b>
+        </p>
+        <p>SUB <br>
+            mosquitto_sub -h HOST -p PORT -u USERNAME -P PASSWORD --cafile PATH_TO_CA_CERT --tls-version TLS_VERSION --insecure -t TOPIC
+        </p>
+        <p>
+            PUB <br>
+            mosquitto_pub -h HOST -p PORT -u USERNAME -P PASSWORD --cafile PATH_TO_CA_CERT --tls-version TLS_VERSION --insecure -t TOPIC -m MESSAGES
+        </p>
+        <p>Restart service : /etc/init.d/mosquitto restart</p>
+        <p>Error Log: /var/log/mosquitto/mosquitto.conf</p>
 		<h2>References :</h2>
 		<ul>
 			<li><a href="https://mqtt.org/">https://mqtt.org/</a></li>
