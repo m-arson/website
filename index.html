@@ -51,18 +51,18 @@
         </ul>
         <p>
             Add custom setting to /etc/mosquitto/conf.d/custom.conf <br>
-            # listener 9000 localhost # MQTT on port 9000 only on interval environment
-            # listener 9000 # For non SSL
-            listener 9001 # Using for SSL MQTT
-
-            allow_anonymous false # set to true if don't want using username password verification
-            password_file /etc/mosquitto/conf.d/userlist # comment this if don't want using username password verification
-
-            cafile /etc/mosquitto/ca_certificates/ca.crt # Copy this file to client request
-            keyfile /etc/mosquitto/ca_certificates/server.key
-            certfile /etc/mosquitto/ca_certificates/server.crt
-            tls_version tlsv1.2 # Version tlsv1.1 | tlsv1.2 | tlsv1.3
-            # require_certificate true # Uncomment this if you dont want to use --insecure
+            # listener 9000 localhost # MQTT on port 9000 only on interval environment <br>
+            # listener 9000 # For non SSL<br>
+            listener 9001 # Using for SSL MQTT<br>
+            <br>
+            allow_anonymous false # set to true if don't want using username password verification<br>
+            password_file /etc/mosquitto/conf.d/userlist # comment this if don't want using username password verification<br>
+            <br>
+            cafile /etc/mosquitto/ca_certificates/ca.crt # Copy this file to client request<br>
+            keyfile /etc/mosquitto/ca_certificates/server.key<br>
+            certfile /etc/mosquitto/ca_certificates/server.crt<br>
+            tls_version tlsv1.2 # Version tlsv1.1 | tlsv1.2 | tlsv1.3<br>
+            # require_certificate true # Uncomment this if you dont want to use --insecure<br>
         </p>
         <b>Common Name must be unique for every generated</b>
         </p>
